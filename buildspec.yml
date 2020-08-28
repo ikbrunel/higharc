@@ -4,15 +4,23 @@ phases:
   install:
     runtime-versions:
       python: 3.8
-      # docker: 18
-    commands:
-    # https://docs.aws.amazon.com/codebuild/latest/userguide/create-project-console.html
-    # - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2
-    # - timeout -t 15 sh -c "until docker info; do echo .; sleep 1; done"
   pre_build:
     commands:
+    # ecr:GetAuthorizationToken
     - $(aws ecr get-login --no-include-email --region us-east-1)
     - REPOSITORY_URI=790428006814.dkr.ecr.us-east-1.amazonaws.com/higharc
+    - COMMIT_HASH=$CODEBUILD_RESOLVED_SOURCE_VERSION
   build:
     commands:
-    - docker build .
+    - docker build -t $REPOSITORY_URI:latest .
+    # bootstrapping note: one needs to docker push $REPOSITORY_URI before one can tag that image.
+    - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$COMMIT_HASH
+  post_build:
+    commands:
+    # ecr:PutImage, ecr:UploadLayerPart, ecr:InitiateLayerUpload, ecr:CompleteLayerUpload, ecr:BatchCheckLayerAvailability
+    - docker push $REPOSITORY_URI:latest
+    - docker push $REPOSITORY_URI:$COMMIT_HASH
+    - printf '[{"name":"higharc", "imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+artifacts:
+  files:
+    - imagedefinitions.json
