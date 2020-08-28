@@ -4,3 +4,15 @@ phases:
   install:
     runtime-versions:
       python: 3.8
+      # docker: 18
+    commands:
+    # https://docs.aws.amazon.com/codebuild/latest/userguide/create-project-console.html
+    # - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2
+    # - timeout -t 15 sh -c "until docker info; do echo .; sleep 1; done"
+  pre_build:
+    commands:
+    - $(aws ecr get-login --no-include-email --region us-east-1)
+    - REPOSITORY_URI=790428006814.dkr.ecr.us-east-1.amazonaws.com/higharc
+  build:
+    commands:
+    - docker build .
