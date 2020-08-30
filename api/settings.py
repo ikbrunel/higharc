@@ -25,7 +25,10 @@ SECRET_KEY = 'q+ntbj$**4ziz^6#!eshzp7ue65ht@d8jr2^h1q9&_isw6+8!1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',  # TODO: only activate in dev env
+    'higharc-env.eba-ry2sev3p.us-east-1.elasticbeanstalk.com',
+]
 
 
 # Application definition
