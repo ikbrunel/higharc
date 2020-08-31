@@ -1,4 +1,4 @@
-from api.models import Smoothie
+from api.models import Smoothie, SmoothieIngredient
 from django.urls import reverse
 from json import dumps, loads
 from random import randint
@@ -7,6 +7,10 @@ from uuid import uuid4
 
 
 class ViewTests(APITestCase):
+
+    @staticmethod
+    def gensym():
+        return str(uuid4())
 
     def test_get_smoothie_with_no_smoothies(self):
         """
@@ -55,3 +59,78 @@ class ViewTests(APITestCase):
         self.assertEqual(
             smoothie_name,
             found_smoothie.name)
+
+    def test_update_smoothie_name(self):
+        url = reverse('smoothie-list')
+
+        smoothie_name = self.gensym()
+        smoothie_updated_name = self.gensym()
+        ingredient_name = self.gensym()
+        ingredient_quantity = 1
+
+        smoothie = Smoothie.objects.create(name=smoothie_name)
+        ingredient = SmoothieIngredient.objects.create(
+            name=ingredient_name, quantity=ingredient_quantity,
+            smoothie=smoothie)
+
+        data = {
+            'id': smoothie.id,
+            'name': smoothie_updated_name,
+            'ingredients': [{
+                'id': ingredient.id,
+                'name': ingredient_name,
+                'quantity': ingredient_quantity
+            }]
+        }
+
+        self.client.patch(
+            url + str(smoothie.id) + '/',
+            data,
+            format='json').content
+
+        smoothie.refresh_from_db()
+
+        self.assertEquals(
+            smoothie_updated_name,
+            smoothie.name)
+
+    def test_cant_update_ingredients_not_on_specified_smoothie(self):
+        url = reverse('smoothie-list')
+
+        smoothie_name = self.gensym()
+        ingredient_name = self.gensym()
+        ingredient_updated_name = self.gensym()
+        ingredient_quantity = 1
+
+        smoothie = Smoothie.objects.create(name=smoothie_name)
+        ingredient = SmoothieIngredient.objects.create(
+            name=ingredient_name, quantity=ingredient_quantity,
+            smoothie=smoothie)
+
+        another_smoothie = Smoothie.objects.create(name=self.gensym())
+        another_ingredient = SmoothieIngredient.objects.create(
+            name=self.gensym(), quantity=ingredient_quantity,
+            smoothie=another_smoothie)
+
+        data = {
+            'id': smoothie.id,
+            'name': smoothie_name,
+            'ingredients': [{
+                'id': another_ingredient.id,
+                'name': ingredient_updated_name,
+                'quantity': ingredient_quantity
+            }]
+        }
+
+        response = self.client.patch(
+            url + str(smoothie.id) + '/',
+            data,
+            format='json')
+
+        self.assertEqual(400, response.status_code)
+
+        ingredient.refresh_from_db()
+
+        self.assertEquals(
+            ingredient_name,
+            ingredient.name)
