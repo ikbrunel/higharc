@@ -10,12 +10,12 @@ class SmoothieIngredientTests(TestCase):
         smoothie.save()
         ingredient_1 = SmoothieIngredient(
             name=str(uuid4()),
-            quantity=1)
+            quantity=1,
+            smoothie=smoothie)
         ingredient_1.save()
-        ingredient_1.smoothies.add(smoothie)
 
         found_smoothie = Smoothie.objects.get(id=smoothie.id)
-        found_ingredients = found_smoothie.smoothieingredient_set.all()
+        found_ingredients = found_smoothie.ingredients.all()
         self.assertEqual(
             found_ingredients.count(),
             1)
