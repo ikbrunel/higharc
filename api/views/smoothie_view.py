@@ -41,12 +41,17 @@ class SmoothieSerializer(ModelSerializer):
         instance_qs.update(**validated_data)
         for ingredient_raw in ingredients_raw:
             if 'id' in ingredient_raw:
-                if not ingredients_existing.filter(id=ingredient_raw['id']).exists():
+                ingredient_id = ingredient_raw.pop('id')
+                if not ingredients_existing.filter(id=ingredient_id).exists():
+                    # Edits on not-this-smoothie's ingredients are disallowed
                     raise ValidationError(
                         {'ingredients':
 
-                         'Ingredient %s not associated with smoothie %s' % (ingredient_raw['id'], instance.id)})
-
+                         'Ingredient %s not associated with smoothie %s' %
+                         (ingredient_id, instance.id)})
+                else:
+                    ingredients_existing.filter(
+                        id=ingredient_id).update(**ingredient_raw)
         return instance
 
 

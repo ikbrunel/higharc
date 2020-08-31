@@ -134,3 +134,41 @@ class ViewTests(APITestCase):
         self.assertEquals(
             ingredient_name,
             ingredient.name)
+
+    def test_can_update_ingredients(self):
+        url = reverse('smoothie-list')
+
+        smoothie_name = self.gensym()
+        ingredient_name = self.gensym()
+        ingredient_updated_name = self.gensym()
+        ingredient_quantity = 1
+        ingredient_updated_quantity = 6
+
+        smoothie = Smoothie.objects.create(name=smoothie_name)
+        ingredient = SmoothieIngredient.objects.create(
+            name=ingredient_name, quantity=ingredient_quantity,
+            smoothie=smoothie)
+
+        data = {
+            'id': smoothie.id,
+            'name': smoothie_name,
+            'ingredients': [{
+                'id': ingredient.id,
+                'name': ingredient_updated_name,
+                'quantity': ingredient_updated_quantity
+            }]
+        }
+
+        self.client.patch(
+            url + str(smoothie.id) + '/',
+            data,
+            format='json')
+
+        ingredient.refresh_from_db()
+
+        self.assertEquals(
+            ingredient_updated_name,
+            ingredient.name)
+        self.assertEquals(
+            ingredient_updated_quantity,
+            ingredient.quantity)
