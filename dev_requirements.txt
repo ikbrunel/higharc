@@ -7,3 +7,6 @@ pyflakes==2.2.0
 
 # deploy
 awsebcli==3.18.2
+
+# django tooling
+django-extensions==3.0.5
