@@ -1,6 +1,12 @@
-from api.models import Smoothie
+from api.models import Smoothie, SmoothieIngredient
 from rest_framework.serializers import ModelSerializer
 from rest_framework.viewsets import ModelViewSet
+
+
+class SmoothieIngredientSerializer(ModelSerializer):
+    class Meta:
+        model = SmoothieIngredient
+        fields = ['name', 'quantity']
 
 
 class SmoothieSerializer(ModelSerializer):
