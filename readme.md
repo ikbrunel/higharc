@@ -12,15 +12,18 @@ Something along the lines of the following should get you rolling:
     pip3 install virtualenvwrapper  # hopefully your distro or homebrew brings pip3 along with py3
     mkvirtualenv higharc_bv  # install packages locally; for subsequent runs use `workon higharc_bv`
     cd $WHEREVER_THIS_REPO_IS_ON_DISC
-    pip install -r requirements.txt  # install deps
+    pip3 install -r requirements.txt  # install deps
     ./manage.py runserver
 
 ## TODO
 
 1. Implement users.
 1. Implement partial updates.
+1. Refactor `url` on test classes onto the class instance and out of test bodies.
 
 ## examples:
+
+May be somewhat out of date, but should serve as an adequate map, if not "build-ready" plans.
 
 ### smoothie
 
@@ -32,7 +35,7 @@ create:
 read:
 
     curl -H "Content-Type: application/json" localhost:8000/smoothie/caf50cb1-d0de-49d1-97dc-f18caa483b41/
-    {"id":"caf50cb1-d0de-49d1-97dc-f18caa483b41","name":"chilly","ingredients":["http://localhost:8000/ingredient/d73b1bf4-760d-45f7-961f-e4c18b9f8090/"]}
+    {"id":"caf50cb1-d0de-49d1-97dc-f18caa483b41","name":"chilly","ingredients":["d73b1bf4-760d-45f7-961f-e4c18b9f8090"]}
 
 update:
 
