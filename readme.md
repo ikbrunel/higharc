@@ -15,6 +15,11 @@ Something along the lines of the following should get you rolling:
     pip install -r requirements.txt  # install deps
     ./manage.py runserver
 
+## TODO
+
+1. Implement users.
+1. Implement partial updates.
+
 ## examples:
 
 ### smoothie
@@ -44,3 +49,28 @@ list:
     [...]
 
 ### smoothie ingredient
+
+create:
+
+    curl localhost:8000/ingredient/ -H "Content-Type: application/json" --data '{"name": "ice cubes", "quantity": 4, "smoothie": "caf50cb1-d0de-49d1-97dc-f18caa483b41"}'
+    {"id":"5dd8d999-d944-4042-9e9d-acf4d2f5ebc1","name":"ice cubes","quantity":4,"smoothie":"caf50cb1-d0de-49d1-97dc-f18caa483b41"}
+
+
+read:
+
+    curl localhost:8000/ingredient/5dd8d999-d944-4042-9e9d-acf4d2f5ebc1/ -H "Content-Type: application/json"
+    {"id":"5dd8d999-d944-4042-9e9d-acf4d2f5ebc1","name":"ice cubes","quantity":4,"smoothie":"caf50cb1-d0de-49d1-97dc-f18caa483b41"}
+
+update:
+
+    curl localhost:8000/ingredient/5dd8d999-d944-4042-9e9d-acf4d2f5ebc1/ -H "Content-Type: application/json" -X PUT --data '{"id": "5dd8d999-d944-4042-9e9d-acf4d2f5ebc1", "name": "tiny cubes", "quantity": 4, "smoothie": "caf50cb1-d0de-49d1-97dc-f18caa483b41"}'
+    {"id":"5dd8d999-d944-4042-9e9d-acf4d2f5ebc1","name":"tiny cubes","quantity":4,"smoothie":"caf50cb1-d0de-49d1-97dc-f18caa483b41"}
+
+delete:
+
+    curl localhost:8000/ingredient/5dd8d999-d944-4042-9e9d-acf4d2f5ebc1/ -H "Content-Type: application/json" -X DELETE
+
+list:
+
+    curl localhost:8000/ingredient/ -H "Content-Type: application/json"
+    [...]
