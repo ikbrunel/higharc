@@ -17,22 +17,30 @@ Something along the lines of the following should get you rolling:
 
 ## examples:
 
+### smoothie
+
 create:
 
-    curl localhost:8000/smoothie/ --data '{"name": "dank", "ingredients": [{"name": "foo", "quantity": 1}]}' -H "Content-Type: application/json"
-
-    -> {"id":"219b2799-aef9-42fd-8bc7-2d95f73c3dc4","name":"dank","ingredients":[{"id":"e6c7bb62-3037-4a28-828a-b24687770f18","name":"foo","quantity":1}]}
+    curl localhost:8000/smoothie/  -H "Content-Type: application/json" --data '{"name": "chilly"}'
+    {"id":"c2675366-860a-40fd-9114-a6ad7bbc9d69","name":"chilly","ingredients":[]}
 
 read:
 
-    curl -H "Content-Type: application/json" localhost:8000/smoothie/219b2799-aef9-42fd-8bc7-2d95f73c3dc4/
-
-    -> {"id":"219b2799-aef9-42fd-8bc7-2d95f73c3dc4","name":"dank","ingredients":[{"id":"e6c7bb62-3037-4a28-828a-b24687770f18","name":"foo","quantity":1}]}
+    curl localhost:8000/smoothie/c2675366-860a-40fd-9114-a6ad7bbc9d69/  -H "Content-Type: application/json"
+    {"id":"c2675366-860a-40fd-9114-a6ad7bbc9d69","name":"chilly","ingredients":[]}
 
 update:
 
-
+    curl localhost:8000/smoothie/c2675366-860a-40fd-9114-a6ad7bbc9d69/  -H "Content-Type: application/json" -X PUT --data '{"id": "c2675366-860a-40fd-9114-a6ad7bbc9d69", "name": "frigid"}'
+    {"id":"c2675366-860a-40fd-9114-a6ad7bbc9d69","name":"frigid","ingredients":[]}
 
 delete:
 
-    curl -X DELETE localhost:8000/smoothie/$SMOOTHIE_ID
+    curl localhost:8000/smoothie/c2675366-860a-40fd-9114-a6ad7bbc9d69/  -H "Content-Type: application/json" -X DELETE
+
+list:
+
+    curl localhost:8000/smoothie/ -H "Content-Type: application/json"
+    [...]
+
+### smoothie ingredient
