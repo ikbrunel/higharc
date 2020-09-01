@@ -1,1 +1,2 @@
 from .smoothie_view import SmoothieViewSet
+from .smoothie_ingredient_viewset import SmoothieIngredientViewSet

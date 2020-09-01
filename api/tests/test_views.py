@@ -1,16 +1,19 @@
 from api.models import Smoothie, SmoothieIngredient
 from django.urls import reverse
-from json import dumps, loads
+from json import loads
 from random import randint
 from rest_framework.test import APITestCase
 from uuid import uuid4
 
 
-class ViewTests(APITestCase):
+class SmoothieTests(APITestCase):
 
     @staticmethod
     def gensym():
         return str(uuid4())
+
+
+class SmoothieViewTests(SmoothieTests):
 
     def test_get_smoothie_with_no_smoothies(self):
         """
@@ -21,7 +24,7 @@ class ViewTests(APITestCase):
 
         self.assertEqual(0, len(response))
 
-    def test_get_smoothie_with_one_smoothies(self):
+    def test_get_smoothie_with_one_smoothie(self):
         """
         If we have 1 smoothie, we get a list of length 1 and the smoothie.
         """
@@ -35,19 +38,11 @@ class ViewTests(APITestCase):
         self.assertEqual(str(smoothie.id), found_smoothie['id'])
         self.assertEqual(smoothie.name, found_smoothie['name'])
 
-    def test_create_a_new_smoothie(self):
+    def test_create_a_new_smoothie_via_api(self):
         url = reverse('smoothie-list')
         smoothie_name = str(uuid4())
-        ingredient_name = str(uuid4())
-        ingredient_count = randint(0, 10)
         data = {
                 'name': smoothie_name,
-                'ingredients': [
-                    {
-                        'name': ingredient_name,
-                        'quantity': ingredient_count
-                     },
-                ]
             }
 
         response = loads(self.client.post(
@@ -65,22 +60,11 @@ class ViewTests(APITestCase):
 
         smoothie_name = self.gensym()
         smoothie_updated_name = self.gensym()
-        ingredient_name = self.gensym()
-        ingredient_quantity = 1
 
         smoothie = Smoothie.objects.create(name=smoothie_name)
-        ingredient = SmoothieIngredient.objects.create(
-            name=ingredient_name, quantity=ingredient_quantity,
-            smoothie=smoothie)
-
         data = {
             'id': smoothie.id,
             'name': smoothie_updated_name,
-            'ingredients': [{
-                'id': ingredient.id,
-                'name': ingredient_name,
-                'quantity': ingredient_quantity
-            }]
         }
 
         self.client.patch(
@@ -135,40 +119,33 @@ class ViewTests(APITestCase):
             ingredient_name,
             ingredient.name)
 
-    def test_can_update_ingredients(self):
-        url = reverse('smoothie-list')
 
-        smoothie_name = self.gensym()
+class SmoothieIngredientTests(SmoothieTests):
+
+    def test_can_create_ingredients(self):
+        url = reverse('smoothie-ingredient-list')
+        smoothie = Smoothie.objects.create(name=self.gensym)
         ingredient_name = self.gensym()
-        ingredient_updated_name = self.gensym()
-        ingredient_quantity = 1
-        ingredient_updated_quantity = 6
-
-        smoothie = Smoothie.objects.create(name=smoothie_name)
-        ingredient = SmoothieIngredient.objects.create(
-            name=ingredient_name, quantity=ingredient_quantity,
-            smoothie=smoothie)
+        ingredient_quantity = randint(0, 10)
 
         data = {
-            'id': smoothie.id,
-            'name': smoothie_name,
-            'ingredients': [{
-                'id': ingredient.id,
-                'name': ingredient_updated_name,
-                'quantity': ingredient_updated_quantity
-            }]
+            'name': ingredient_name,
+            'quantity': ingredient_quantity,
+            'smoothie': smoothie.id
         }
 
-        self.client.patch(
-            url + str(smoothie.id) + '/',
+        response = loads(self.client.post(
+            url,
             data,
-            format='json')
+            format='json'
+        ).content)
 
-        ingredient.refresh_from_db()
+        smoothie_ingredient = SmoothieIngredient.objects.get(
+            id=response['id'])
 
         self.assertEquals(
-            ingredient_updated_name,
-            ingredient.name)
+            ingredient_name,
+            smoothie_ingredient.name)
         self.assertEquals(
-            ingredient_updated_quantity,
-            ingredient.quantity)
+            ingredient_quantity,
+            smoothie_ingredient.quantity)
