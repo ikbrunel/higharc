@@ -56,6 +56,21 @@ class SmoothieViewTests(SmoothieTests):
             smoothie_name,
             found_smoothie.name)
 
+    def test_unique_smoothie_names(self):
+        url = reverse('smoothie-list')
+        smoothie = Smoothie.objects.create(name=self.gensym())
+        data = {
+            "name": smoothie.name
+        }
+
+        response = self.client.post(
+            url, data, format='json')
+
+        self.assertEquals(400, response.status_code)
+        self.assertEquals(
+            {'name': ['smoothie with this name already exists.']},
+            loads(response.content))
+
     def test_update_smoothie_name(self):
         url = reverse('smoothie-list')
 
