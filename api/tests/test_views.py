@@ -29,8 +29,8 @@ class SmoothieViewTests(SmoothieTests):
         If we have 1 smoothie, we get a list of length 1 and the smoothie.
         """
         url = reverse('smoothie-list')
-        smoothie = Smoothie(name=str(uuid4()))
-        smoothie.save()
+        smoothie = Smoothie.objects.create(name=str(uuid4()))
+
         response = loads(self.client.get(url).content)
         found_smoothie = response[0]
 
@@ -42,8 +42,8 @@ class SmoothieViewTests(SmoothieTests):
         url = reverse('smoothie-list')
         smoothie_name = str(uuid4())
         data = {
-                'name': smoothie_name,
-            }
+            'name': smoothie_name,
+        }
 
         response = loads(self.client.post(
             url,
@@ -51,6 +51,7 @@ class SmoothieViewTests(SmoothieTests):
             format='json').content)
 
         found_smoothie = Smoothie.objects.get(id=response['id'])
+
         self.assertEqual(
             smoothie_name,
             found_smoothie.name)
@@ -77,47 +78,6 @@ class SmoothieViewTests(SmoothieTests):
         self.assertEquals(
             smoothie_updated_name,
             smoothie.name)
-
-    def test_cant_update_ingredients_not_on_specified_smoothie(self):
-        url = reverse('smoothie-list')
-
-        smoothie_name = self.gensym()
-        ingredient_name = self.gensym()
-        ingredient_updated_name = self.gensym()
-        ingredient_quantity = 1
-
-        smoothie = Smoothie.objects.create(name=smoothie_name)
-        ingredient = SmoothieIngredient.objects.create(
-            name=ingredient_name, quantity=ingredient_quantity,
-            smoothie=smoothie)
-
-        another_smoothie = Smoothie.objects.create(name=self.gensym())
-        another_ingredient = SmoothieIngredient.objects.create(
-            name=self.gensym(), quantity=ingredient_quantity,
-            smoothie=another_smoothie)
-
-        data = {
-            'id': smoothie.id,
-            'name': smoothie_name,
-            'ingredients': [{
-                'id': another_ingredient.id,
-                'name': ingredient_updated_name,
-                'quantity': ingredient_quantity
-            }]
-        }
-
-        response = self.client.patch(
-            url + str(smoothie.id) + '/',
-            data,
-            format='json')
-
-        self.assertEqual(400, response.status_code)
-
-        ingredient.refresh_from_db()
-
-        self.assertEquals(
-            ingredient_name,
-            ingredient.name)
 
 
 class SmoothieIngredientTests(SmoothieTests):

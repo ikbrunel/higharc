@@ -31,8 +31,8 @@ create:
 
 read:
 
-    curl localhost:8000/smoothie/c2675366-860a-40fd-9114-a6ad7bbc9d69/  -H "Content-Type: application/json"
-    {"id":"c2675366-860a-40fd-9114-a6ad7bbc9d69","name":"chilly","ingredients":[]}
+    curl -H "Content-Type: application/json" localhost:8000/smoothie/caf50cb1-d0de-49d1-97dc-f18caa483b41/
+    {"id":"caf50cb1-d0de-49d1-97dc-f18caa483b41","name":"chilly","ingredients":["http://localhost:8000/ingredient/d73b1bf4-760d-45f7-961f-e4c18b9f8090/"]}
 
 update:
 

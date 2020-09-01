@@ -1,11 +1,10 @@
 from api.models import Smoothie, SmoothieIngredient
-from rest_framework.serializers import ModelSerializer, HyperlinkedRelatedField
+from rest_framework.serializers import (
+    ModelSerializer, PrimaryKeyRelatedField, UUIDField)
 
 
 class SmoothieSerializer(ModelSerializer):
-    ingredients = HyperlinkedRelatedField(
-        many=True, required=False, view_name='smoothie-ingredient-detail',
-        queryset=SmoothieIngredient.objects.all())
+    ingredients = PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Smoothie
