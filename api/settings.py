@@ -1,4 +1,12 @@
+from enum import Enum
+from os import getenv
 from pathlib import Path
+
+class Environment(Enum):
+    Production = 'PRODUCTION'
+    Development = 'DEVELOPMENT'
+
+ENVIRONMENT = Environment(getenv('ENVIRONMENT', 'DEVELOPMENT'))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
@@ -70,14 +78,23 @@ WSGI_APPLICATION = 'api.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'higharc_bv',
+if ENVIRONMENT == Environment.Production:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'higharc_bv',
+            'USER': getenv('PG_USER'),
+            'PASSWORD': getenv('PG_PASS'),
+            'HOST': getenv('PG_HOST')
+        }
     }
-}
-
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'higharc_bv',
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
