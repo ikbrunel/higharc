@@ -1,6 +1,7 @@
-from api.models import Smoothie, SmoothieIngredient
+from api.models import Smoothie
 from rest_framework.serializers import (
-    ModelSerializer, PrimaryKeyRelatedField, UUIDField)
+    ModelSerializer, PrimaryKeyRelatedField,
+)
 
 
 class SmoothieSerializer(ModelSerializer):
@@ -8,4 +9,4 @@ class SmoothieSerializer(ModelSerializer):
 
     class Meta:
         model = Smoothie
-        fields = ['id', 'name', 'ingredients']
+        fields = ['id', 'name', 'ingredients', 'user_id']

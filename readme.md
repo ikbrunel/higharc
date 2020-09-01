@@ -17,9 +17,13 @@ Something along the lines of the following should get you rolling:
 
 ## TODO
 
-1. Implement users.
+1. Update documentation to show user_id usage.
 1. Implement partial updates.
 1. Refactor `url` on test classes onto the class instance and out of test bodies.
+1. Fix staticfiles.
+1. Refactor the UUID PK field into a reusable field.
+1. Add database constraints to ensure that user_ids match on associated smoothies and items (this currently is only enforced in application code).
+1. Add test-running to Elastic Beanstalk deploy
 
 ## examples:
 

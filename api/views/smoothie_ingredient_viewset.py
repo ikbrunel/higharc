@@ -1,8 +1,8 @@
 from api.models import SmoothieIngredient
 from api.serializers import SmoothieIngredientSerializer
-from rest_framework.viewsets import ModelViewSet
+from .user_id_viewset import UserIdViewSet
 
 
-class SmoothieIngredientViewSet(ModelViewSet):
+class SmoothieIngredientViewSet(UserIdViewSet):
     queryset = SmoothieIngredient.objects.all()
     serializer_class = SmoothieIngredientSerializer

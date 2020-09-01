@@ -13,3 +13,4 @@ class SmoothieIngredient(Model):
         Smoothie, related_name='ingredients', on_delete=CASCADE)
     name = TextField(max_length=255, blank=False, null=False)
     quantity = IntegerField()
+    user_id = UUIDField(blank=False, null=False)
