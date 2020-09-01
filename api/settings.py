@@ -34,7 +34,6 @@ INSTALLED_APPS = [
     'api',
 
     # Plugins
-    'django_extensions',  # dev tooling
     'rest_framework',  # framework for APIs
 ]
 
