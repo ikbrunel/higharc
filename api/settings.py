@@ -2,9 +2,11 @@ from enum import Enum
 from os import getenv
 from pathlib import Path
 
+
 class Environment(Enum):
     Production = 'PRODUCTION'
     Development = 'DEVELOPMENT'
+
 
 ENVIRONMENT = Environment(getenv('ENVIRONMENT', 'DEVELOPMENT'))
 
@@ -19,7 +21,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 SECRET_KEY = 'q+ntbj$**4ziz^6#!eshzp7ue65ht@d8jr2^h1q9&_isw6+8!1'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = ENVIRONMENT != Environment.Production
 
 ALLOWED_HOSTS = [
     'localhost',  # TODO: only activate in dev env
