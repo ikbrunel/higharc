@@ -58,6 +58,10 @@ The deployment story for this app is pretty good out of the box (thanks, Elastic
 
     I always end up wanting one :D
 
+- TLS
+
+    Table stakes in 2020!
+
 ## What went well
 
 - Data model design and implementation
@@ -108,7 +112,7 @@ Something along the lines of the following should get you rolling:
     mkvirtualenv higharc_bv  # install packages locally; for subsequent runs use `workon higharc_bv`
     cd $WHEREVER_THIS_REPO_IS_ON_DISC
     pip3 install -r requirements.txt  # install deps
-    psql -c 'create database higharc_bv'
+    psql -c 'create database higharc_bv'  # you will want a postgres
     ./manage.py migrate
     ./manage.py runserver
 
@@ -128,57 +132,111 @@ Something along the lines of the following should get you rolling:
 
 ## examples:
 
-May be somewhat out of date, but should serve as an adequate map, if not "build-ready" plans.
-
 ### smoothie
 
 create:
 
-    curl localhost:8000/smoothie/  -H "Content-Type: application/json" --data '{"name": "chilly"}'
-    {"id":"c2675366-860a-40fd-9114-a6ad7bbc9d69","name":"chilly","ingredients":[]}
+    curl -H "Content-Type: application/json" \
+    http://higharc-env.eba-ry2sev3p.us-east-1.elasticbeanstalk.com/smoothie/ \
+    --data '{"name": "chilly smoothie", \
+             "user_id": "0a819266-420a-43b6-b677-aac44a8bb0e1"}'
+
+    {"id":"28808d54-9a46-44d7-9c90-632e2c144584", \
+     "name":"chilly smoothie", \
+     "ingredients":[], \
+     "user_id":"0a819266-420a-43b6-b677-aac44a8bb0e1"}
 
 read:
 
-    curl -H "Content-Type: application/json" localhost:8000/smoothie/caf50cb1-d0de-49d1-97dc-f18caa483b41/
-    {"id":"caf50cb1-d0de-49d1-97dc-f18caa483b41","name":"chilly","ingredients":["d73b1bf4-760d-45f7-961f-e4c18b9f8090"]}
+    curl -H "Content-Type: application/json" \
+    http://higharc-env.eba-ry2sev3p.us-east-1.elasticbeanstalk.com/smoothie/28808d54-9a46-44d7-9c90-632e2c144584/?user_id=0a819266-420a-43b6-b677-aac44a8bb0e1
+
+    {"id":"28808d54-9a46-44d7-9c90-632e2c144584", \
+     "name":"chilly smoothie", \
+     "ingredients":[], \
+     "user_id":"0a819266-420a-43b6-b677-aac44a8bb0e1"}
 
 update:
 
-    curl localhost:8000/smoothie/c2675366-860a-40fd-9114-a6ad7bbc9d69/  -H "Content-Type: application/json" -X PUT --data '{"id": "c2675366-860a-40fd-9114-a6ad7bbc9d69", "name": "frigid"}'
-    {"id":"c2675366-860a-40fd-9114-a6ad7bbc9d69","name":"frigid","ingredients":[]}
+    curl -H "Content-Type: application/json" -X PUT \
+    http://higharc-env.eba-ry2sev3p.us-east-1.elasticbeanstalk.com/smoothie/28808d54-9a46-44d7-9c90-632e2c144584/ \
+    --data '{"name": "frigid smoothie", \
+             "user_id": "0a819266-420a-43b6-b677-aac44a8bb0e1"}'
+
+    {"id":"28808d54-9a46-44d7-9c90-632e2c144584", \
+     "name":"frigid smoothie", \
+     "ingredients":[], \
+     "user_id":"0a819266-420a-43b6-b677-aac44a8bb0e1"}
 
 delete:
 
-    curl localhost:8000/smoothie/c2675366-860a-40fd-9114-a6ad7bbc9d69/  -H "Content-Type: application/json" -X DELETE
+    curl -H "Content-Type: application/json" -X DELETE \
+    http://higharc-env.eba-ry2sev3p.us-east-1.elasticbeanstalk.com/smoothie/28808d54-9a46-44d7-9c90-632e2c144584/
 
 list:
 
-    curl localhost:8000/smoothie/ -H "Content-Type: application/json"
-    [...]
+    curl -H "Content-Type: application/json" \
+    http://higharc-env.eba-ry2sev3p.us-east-1.elasticbeanstalk.com/smoothie/?user_id=0a819266-420a-43b6-b677-aac44a8bb0e1
+
+    [{"id":"28808d54-9a46-44d7-9c90-632e2c144584", \
+      "name":"frigid smoothie", \
+      "ingredients":[], \
+      "user_id":"0a819266-420a-43b6-b677-aac44a8bb0e1"}]
 
 ### smoothie ingredient
 
 create:
 
-    curl localhost:8000/ingredient/ -H "Content-Type: application/json" --data '{"name": "ice cubes", "quantity": 4, "smoothie": "caf50cb1-d0de-49d1-97dc-f18caa483b41"}'
-    {"id":"5dd8d999-d944-4042-9e9d-acf4d2f5ebc1","name":"ice cubes","quantity":4,"smoothie":"caf50cb1-d0de-49d1-97dc-f18caa483b41"}
+    curl -H "Content-Type: application/json" \
+    http://higharc-env.eba-ry2sev3p.us-east-1.elasticbeanstalk.com/ingredient/ \
+    --data '{"name": "ice cubes", "quantity": 4, \
+             "smoothie": "28808d54-9a46-44d7-9c90-632e2c144584", \
+             "user_id": "0a819266-420a-43b6-b677-aac44a8bb0e1"}'
 
+    {"id":"0b285a1f-1615-420e-98aa-a478260c6aa6", \
+     "name":"ice cubes", \
+     "quantity":4, \
+     "smoothie":"28808d54-9a46-44d7-9c90-632e2c144584", \
+     "user_id":"0a819266-420a-43b6-b677-aac44a8bb0e1"}
 
 read:
 
-    curl localhost:8000/ingredient/5dd8d999-d944-4042-9e9d-acf4d2f5ebc1/ -H "Content-Type: application/json"
-    {"id":"5dd8d999-d944-4042-9e9d-acf4d2f5ebc1","name":"ice cubes","quantity":4,"smoothie":"caf50cb1-d0de-49d1-97dc-f18caa483b41"}
+    curl -H "Content-Type: application/json" \
+    http://higharc-env.eba-ry2sev3p.us-east-1.elasticbeanstalk.com/ingredient/0b285a1f-1615-420e-98aa-a478260c6aa6/?user_id=0a819266-420a-43b6-b677-aac44a8bb0e1
+
+    {"id":"0b285a1f-1615-420e-98aa-a478260c6aa6", \
+     "name":"ice cubes", \
+     "quantity":4, \
+     "smoothie":"28808d54-9a46-44d7-9c90-632e2c144584", \
+     "user_id":"0a819266-420a-43b6-b677-aac44a8bb0e1"}
 
 update:
 
-    curl localhost:8000/ingredient/5dd8d999-d944-4042-9e9d-acf4d2f5ebc1/ -H "Content-Type: application/json" -X PUT --data '{"id": "5dd8d999-d944-4042-9e9d-acf4d2f5ebc1", "name": "tiny cubes", "quantity": 4, "smoothie": "caf50cb1-d0de-49d1-97dc-f18caa483b41"}'
-    {"id":"5dd8d999-d944-4042-9e9d-acf4d2f5ebc1","name":"tiny cubes","quantity":4,"smoothie":"caf50cb1-d0de-49d1-97dc-f18caa483b41"}
+    curl -H "Content-Type: application/json" -X PUT \
+    http://higharc-env.eba-ry2sev3p.us-east-1.elasticbeanstalk.com/ingredient/0b285a1f-1615-420e-98aa-a478260c6aa6/ \
+    --data '{"name": "sonic ice", \
+             "quantity": 5, \
+             "smoothie":"28808d54-9a46-44d7-9c90-632e2c144584", \
+             "user_id": "0a819266-420a-43b6-b677-aac44a8bb0e1"}'
+
+    {"id":"0b285a1f-1615-420e-98aa-a478260c6aa6", \
+     "name":"sonic ice", \
+     "quantity":5, \
+     "smoothie":"28808d54-9a46-44d7-9c90-632e2c144584", \
+     "user_id":"0a819266-420a-43b6-b677-aac44a8bb0e1"}
 
 delete:
 
-    curl localhost:8000/ingredient/5dd8d999-d944-4042-9e9d-acf4d2f5ebc1/ -H "Content-Type: application/json" -X DELETE
+    curl -X DELETE -H "Content-Type: application/json" -X PUT \
+    http://higharc-env.eba-ry2sev3p.us-east-1.elasticbeanstalk.com/ingredient/0b285a1f-1615-420e-98aa-a478260c6aa6/?user_id=0a819266-420a-43b6-b677-aac44a8bb0e1
 
 list:
 
-    curl localhost:8000/ingredient/ -H "Content-Type: application/json"
-    [...]
+    curl -H "Content-Type: application/json" \
+    http://higharc-env.eba-ry2sev3p.us-east-1.elasticbeanstalk.com/ingredient/?user_id=0a819266-420a-43b6-b677-aac44a8bb0e1
+
+    [{"id":"0b285a1f-1615-420e-98aa-a478260c6aa6", \
+      "name":"sonic ice", \
+      "quantity":5, \
+      "smoothie":"28808d54-9a46-44d7-9c90-632e2c144584", \
+      "user_id":"0a819266-420a-43b6-b677-aac44a8bb0e1"}]
