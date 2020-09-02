@@ -24,8 +24,7 @@ SECRET_KEY = 'q+ntbj$**4ziz^6#!eshzp7ue65ht@d8jr2^h1q9&_isw6+8!1'
 DEBUG = ENVIRONMENT != Environment.Production
 
 ALLOWED_HOSTS = [
-    'localhost',  # TODO: only activate in dev env
-    'higharc-env.eba-ry2sev3p.us-east-1.elasticbeanstalk.com',
+    '*'  # TODO: be more strict; make Elastic Beanstalk use a Host header.
 ]
 
 
